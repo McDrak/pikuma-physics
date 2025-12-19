@@ -30,69 +30,76 @@ namespace PikumaLessons
 	{
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Vec2& inVec)
+	auto operator<<(std::ostream& os, const Vec2& inVec) -> std::ostream&
 	{
 		os << inVec.GetX() << " " << inVec.GetY();
 		return os;
 	}
 
-	Vec2& Vec2::operator=(const Vec2& other)
+	auto Vec2::operator=(const Vec2& other) -> Vec2&
 	{
 		m_X = other.GetX();
 		m_Y = other.GetY();
 		return *this;
 	}
 
-	Vec2& Vec2::operator=(Vec2&& other) noexcept
+	auto Vec2::operator=(Vec2&& other) noexcept -> Vec2&
 	{
 		m_X = other.GetX();
 		m_Y = other.GetY();
 		return *this;
 	}
 
-	Vec2 Vec2::operator+(const Vec2& other) const
+	auto Vec2::operator+(const Vec2& other) const -> Vec2
 	{
 		return { m_X + other.GetX(), m_Y + other.GetY() };
 	}
 
-	Vec2 Vec2::operator-(const Vec2& other) const
+	auto Vec2::operator-(const Vec2& other) const -> Vec2
 	{
 		return { m_X - other.GetX(), m_Y - other.GetY() };
 	}
 
-	Vec2 Vec2::operator*(const float scalar) const
+	auto Vec2::operator*(const float scalar) const -> Vec2
 	{
 		return { m_X * scalar, m_Y * scalar };
 	}
 
-	float Vec2::Length() const
+	auto Vec2::Length() const -> float
 	{
 		return std::sqrt(LengthSquared());
 	}
 
-	float Vec2::LengthSquared() const
+	auto Vec2::LengthSquared() const -> float
 	{
 		return (m_X * m_X) + (m_Y * m_Y);
 	}
 
-	Vec2 Vec2::Normal() const
+	auto Vec2::Normal() const -> Vec2
 	{
 		return { m_Y, -m_X };
 	}
 
-	Vec2 Vec2::Normalized() const
+	auto Vec2::UnitVector() const -> Vec2
 	{
 		const float newX = std::abs(m_X / Length());
 		const float newY = std::abs(m_Y / Length());
 		return { newX, newY };
 	}
 
-	float Vec2::DotProduct(const Vec2& first, const Vec2& second)
+	auto Vec2::Rotate(const float angle) const -> Vec2
+	{
+		const float newX = (m_X * std::cos(angle)) - (m_Y * std::sin(angle));
+		const float newY = (m_X * std::sin(angle)) + (m_Y * std::cos(angle));
+		return { newX, newY };
+	}
+
+	auto Vec2::DotProduct(const Vec2& first, const Vec2& second) -> float
 	{
 		return (first.m_X * second.m_X) + (first.m_Y * second.m_Y);
 	}
 
-	float Vec2::CrossProduct(const Vec2& first, const Vec2& second)
+	auto Vec2::CrossProduct(const Vec2& first, const Vec2& second) -> float
 	{
 		return (first.GetX() * second.GetY()) - (first.GetY() * second.GetX());
 	}

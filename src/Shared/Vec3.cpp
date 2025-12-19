@@ -29,13 +29,13 @@ namespace PikumaLessons
 	{
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Vec3& inVec)
+	auto operator<<(std::ostream& os, const Vec3& inVec) -> std::ostream&
 	{
 		os << inVec.GetX() << " " << inVec.GetY() << " " << inVec.GetZ();
 		return os;
 	}
 
-	Vec3& Vec3::operator=(const Vec3& other)
+	auto Vec3::operator=(const Vec3& other) -> Vec3&
 	{
 		m_X = other.GetX();
 		m_Y = other.GetY();
@@ -43,7 +43,7 @@ namespace PikumaLessons
 		return *this;
 	}
 
-	Vec3& Vec3::operator=(Vec3&& other) noexcept
+	auto Vec3::operator=(Vec3&& other) noexcept -> Vec3&
 	{
 		m_X = other.GetX();
 		m_Y = other.GetY();
@@ -51,32 +51,32 @@ namespace PikumaLessons
 		return *this;
 	}
 
-	Vec3 Vec3::operator+(const Vec3& other) const
+	auto Vec3::operator+(const Vec3& other) const -> Vec3
 	{
 		return { m_X + other.m_X, m_Y + other.m_Y, m_Z + other.m_Z };
 	}
 
-	Vec3 Vec3::operator-(const Vec3& other) const
+	auto Vec3::operator-(const Vec3& other) const -> Vec3
 	{
 		return { m_X - other.m_X, m_Y - other.m_Y, m_Z - other.m_Z };
 	}
 
-	Vec3 Vec3::operator*(const float scalar) const
+	auto Vec3::operator*(const float scalar) const -> Vec3
 	{
 		return { m_X * scalar, m_Y * scalar, m_Z * scalar };
 	}
 
-	float Vec3::Length() const
+	auto Vec3::Length() const -> float
 	{
 		return std::sqrt(LengthSquared());
 	}
 
-	float Vec3::LengthSquared() const
+	auto Vec3::LengthSquared() const -> float
 	{
 		return (m_X * m_X) + (m_Y * m_Y) + (m_Z * m_Z);
 	}
 
-	Vec3 Vec3::Normalized() const
+	auto Vec3::UnitVector() const -> Vec3
 	{
 		const float newX = std::abs(m_X / Length());
 		const float newY = std::abs(m_Y / Length());
@@ -84,12 +84,12 @@ namespace PikumaLessons
 		return { newX, newY, newZ };
 	}
 
-	float Vec3::DotProduct(const Vec3& first, const Vec3& second)
+	auto Vec3::DotProduct(const Vec3& first, const Vec3& second) -> float
 	{
 		return (first.GetX() * second.GetX()) + (first.GetY() * second.GetY()) + (first.GetZ() * second.GetZ());
 	}
 
-	Vec3 Vec3::CrossProduct(const Vec3& first, const Vec3& second)
+	auto Vec3::CrossProduct(const Vec3& first, const Vec3& second) -> Vec3
 	{
 		const float newX = (first.GetY() * second.GetZ()) - (first.GetZ() * second.GetY());
 		const float newY = (first.GetZ() * second.GetX()) - (first.GetX() * second.GetZ());

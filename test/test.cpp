@@ -18,7 +18,8 @@ int main()
 	std::cout << vec.LengthSquared() << '\n';
 	std::cout << vec.Length() << '\n';
 	std::cout << vec.Normal() << '\n';
-	std::cout << vec.Normalized() << '\n';
+	std::cout << vec.UnitVector() << '\n';
+	std::cout << vec.Rotate(30.f) << '\n';
 	std::cout << PikumaLessons::Vec2::DotProduct(vec, vec2) << '\n';
 	std::cout << PikumaLessons::Vec2::CrossProduct(vec, vec2) << '\n';
 
@@ -34,7 +35,7 @@ int main()
 	std::cout << vec3 * 2.f << '\n';
 	std::cout << vec3.LengthSquared() << '\n';
 	std::cout << vec3.Length() << '\n';
-	std::cout << vec3.Normalized() << '\n';
+	std::cout << vec3.UnitVector() << '\n';
 	std::cout << PikumaLessons::Vec3::DotProduct(vec3, vec4) << '\n';
 	std::cout << PikumaLessons::Vec3::CrossProduct(vec3, vec4) << '\n';
 

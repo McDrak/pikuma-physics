@@ -14,25 +14,26 @@ namespace PikumaLessons
 		Vec2(Vec2&& other) noexcept;
 		~Vec2() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const Vec2& inVec);
-		Vec2& operator=(const Vec2& other);
-		Vec2& operator=(Vec2&& other) noexcept;
-		Vec2 operator+(const Vec2& other) const;
-		Vec2 operator-(const Vec2& other) const;
-		Vec2 operator*(float scalar) const;
+		friend auto operator<<(std::ostream& os, const Vec2& inVec) -> std::ostream&;
+		auto operator=(const Vec2& other) -> Vec2&;
+		auto operator=(Vec2&& other) noexcept -> Vec2&;
+		auto operator+(const Vec2& other) const -> Vec2;
+		auto operator-(const Vec2& other) const -> Vec2;
+		auto operator*(float scalar) const -> Vec2;
 
-		[[nodiscard]] float GetX() const { return m_X; }
-		[[nodiscard]] float GetY() const { return m_Y; }
+		[[nodiscard]] auto GetX() const -> float { return m_X; }
+		[[nodiscard]] auto GetY() const -> float { return m_Y; }
 		void SetX(const float newX) { m_X = newX; }
 		void SetY(const float newY) { m_Y = newY; }
 
-		[[nodiscard]] float Length() const;
-		[[nodiscard]] float LengthSquared() const;
-		[[nodiscard]] Vec2 Normal() const;
-		[[nodiscard]] Vec2 Normalized() const;
+		[[nodiscard]] auto Length() const -> float;
+		[[nodiscard]] auto LengthSquared() const -> float;
+		[[nodiscard]] auto Normal() const -> Vec2;
+		[[nodiscard]] auto UnitVector() const -> Vec2;
+		[[nodiscard]] auto Rotate(float angle) const -> Vec2;
 
-		static float DotProduct(const Vec2& first, const Vec2& second);
-		static float CrossProduct(const Vec2& first, const Vec2& second);
+		static auto DotProduct(const Vec2& first, const Vec2& second) -> float;
+		static auto CrossProduct(const Vec2& first, const Vec2& second) -> float;
 
 	private:
 		float m_X;
