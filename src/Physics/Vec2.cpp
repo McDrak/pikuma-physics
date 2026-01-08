@@ -1,4 +1,4 @@
-#include "Shared/Vec2.hpp"
+#include "Physics/Vec2.hpp"
 
 #include <complex>
 
@@ -77,7 +77,8 @@ namespace PikumaLessons
 
 	auto Vec2::Normal() const -> Vec2
 	{
-		return { m_Y, -m_X };
+		const Vec2 newNormal = { m_Y, -m_X };
+		return newNormal.UnitVector();
 	}
 
 	auto Vec2::UnitVector() const -> Vec2
