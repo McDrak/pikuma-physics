@@ -4,6 +4,7 @@
         SDL2_imageFilter.c
 )
 
-target_link_libraries(SDL2_gfx PUBLIC SDL2::SDL2)
+target_link_libraries(SDL2_gfx PRIVATE SDL2::SDL2main SDL2::SDL2-static)
+target_include_directories(SDL2_gfx PUBLIC .)
 
 add_library(SDL2::gfx ALIAS SDL2_gfx)
