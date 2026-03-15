@@ -5,6 +5,8 @@ add_library(PikumaLessons ${ENGINE_SOURCES})
 target_include_directories(PikumaLessons PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Link SDL2 and its libraries
-target_link_libraries(PikumaLessons PRIVATE SDL2::SDL2main SDL2::SDL2-static)
-target_link_libraries(PikumaLessons PRIVATE SDL2_image::SDL2_image-static)
-target_link_libraries(PikumaLessons PRIVATE SDL2::gfx)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+
+target_link_libraries(PikumaLessons PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(PikumaLessons PRIVATE ${SDL2_IMAGE_LIBRARIES})
+target_link_libraries(PikumaLessons PRIVATE ${SDL2_GFX_LIBRARIES})

@@ -5,7 +5,7 @@
 namespace PikumaLessons
 {
 	Vec2::Vec2()
-		: m_X(0.f), m_Y(0.f)
+		: m_X(0.F), m_Y(0.F)
 	{
 	}
 
@@ -20,44 +20,44 @@ namespace PikumaLessons
 	}
 
 	Vec2::Vec2(const Vec2& other)
-		: m_X(other.GetX()), m_Y(other.GetY())
+		: m_X(other.m_X), m_Y(other.m_Y)
 	{
 	}
 
 	Vec2::Vec2(Vec2&& other) noexcept
-		: m_X(other.GetX()),
-		  m_Y(other.GetY())
+		: m_X(other.m_X),
+		  m_Y(other.m_Y)
 	{
 	}
 
 	auto operator<<(std::ostream& os, const Vec2& inVec) -> std::ostream&
 	{
-		os << inVec.GetX() << " " << inVec.GetY();
+		os << inVec.m_X << " " << inVec.m_Y;
 		return os;
 	}
 
 	auto Vec2::operator=(const Vec2& other) -> Vec2&
 	{
-		m_X = other.GetX();
-		m_Y = other.GetY();
+		m_X = other.m_X;
+		m_Y = other.m_Y;
 		return *this;
 	}
 
 	auto Vec2::operator=(Vec2&& other) noexcept -> Vec2&
 	{
-		m_X = other.GetX();
-		m_Y = other.GetY();
+		m_X = other.m_X;
+		m_Y = other.m_Y;
 		return *this;
 	}
 
 	auto Vec2::operator+(const Vec2& other) const -> Vec2
 	{
-		return { m_X + other.GetX(), m_Y + other.GetY() };
+		return { m_X + other.m_X, m_Y + other.m_Y };
 	}
 
 	auto Vec2::operator-(const Vec2& other) const -> Vec2
 	{
-		return { m_X - other.GetX(), m_Y - other.GetY() };
+		return { m_X - other.m_X, m_Y - other.m_Y };
 	}
 
 	auto Vec2::operator*(const float scalar) const -> Vec2
@@ -77,14 +77,28 @@ namespace PikumaLessons
 
 	auto Vec2::Normal() const -> Vec2
 	{
-		const Vec2 newNormal = { m_Y, -m_X };
-		return newNormal.UnitVector();
+		Vec2 newNormal = { m_Y, -m_X };
+		return newNormal.Normalize();
+	}
+
+	auto Vec2::Normalize() -> Vec2&
+	{
+		const float vecLength = Length();
+		if(vecLength != 0.F)
+		{
+			m_X /= vecLength;
+			m_Y /= vecLength;
+		}
+
+		return *this;
 	}
 
 	auto Vec2::UnitVector() const -> Vec2
 	{
-		const float newX = std::abs(m_X / Length());
-		const float newY = std::abs(m_Y / Length());
+		const float vecLength = Length();
+		const float newX = std::abs(m_X / vecLength);
+		const float newY = std::abs(m_Y / vecLength);
+
 		return { newX, newY };
 	}
 
@@ -92,6 +106,7 @@ namespace PikumaLessons
 	{
 		const float newX = (m_X * std::cos(angle)) - (m_Y * std::sin(angle));
 		const float newY = (m_X * std::sin(angle)) + (m_Y * std::cos(angle));
+
 		return { newX, newY };
 	}
 
@@ -102,6 +117,6 @@ namespace PikumaLessons
 
 	auto Vec2::CrossProduct(const Vec2& first, const Vec2& second) -> float
 	{
-		return (first.GetX() * second.GetY()) - (first.GetY() * second.GetX());
+		return (first.m_X * second.m_Y) - (first.m_Y * second.m_X);
 	}
 }

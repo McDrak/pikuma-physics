@@ -13,9 +13,9 @@ namespace PikumaLessons
 		static SDL_Window* window;
 		static SDL_Renderer* renderer;
 
-		static int Width();
-		static int Height();
-		static bool OpenWindow();
+		static auto Width() -> int;
+		static auto  Height() -> int;
+		static auto  OpenWindow() -> bool;
 		static void CloseWindow();
 		static void ClearScreen(Uint32 color);
 		static void RenderFrame();
