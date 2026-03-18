@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "SDL2_gfxPrimitives.h"
-#include "SDL_error.h"
+#include "SDL2/SDL2_gfxPrimitives.h"
+#include "SDL2/SDL_error.h"
 
 // TODO: There are a lot of changes that could be done in this and the .hpp file. Hopefully they'll be done in the future.
 

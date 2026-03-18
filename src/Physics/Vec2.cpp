@@ -1,6 +1,8 @@
 #include "Physics/Vec2.hpp"
 
-#include <complex>
+#include <cmath>
+#include <ostream>
+#include <iostream>
 
 namespace PikumaLessons
 {
@@ -65,6 +67,38 @@ namespace PikumaLessons
 		return { m_X * scalar, m_Y * scalar };
 	}
 
+	auto Vec2::operator/(float scalar) const -> Vec2
+	{
+		return { m_X / scalar, m_Y / scalar };
+	}
+
+	auto Vec2::operator+=(const Vec2& other) -> Vec2&
+	{
+		m_X += other.m_X;
+		m_Y += other.m_Y;
+		return *this;
+	}
+	auto Vec2::operator-=(const Vec2& other) -> Vec2&
+	{
+		m_X -= other.m_X;
+		m_Y -= other.m_Y;
+		return *this;
+	}
+
+	auto Vec2::operator*=(float scalar) -> Vec2&
+	{
+		m_X *= scalar;
+		m_Y *= scalar;
+		return *this;
+	}
+
+	auto Vec2::operator/=(float scalar) -> Vec2&
+	{
+		m_X /= scalar;
+		m_Y /= scalar;
+		return *this;
+	}
+
 	auto Vec2::Length() const -> float
 	{
 		return std::sqrt(LengthSquared());
@@ -96,8 +130,13 @@ namespace PikumaLessons
 	auto Vec2::UnitVector() const -> Vec2
 	{
 		const float vecLength = Length();
-		const float newX = std::abs(m_X / vecLength);
-		const float newY = std::abs(m_Y / vecLength);
+		if(vecLength == 0.F)
+		{
+			return { 0.F, 0.F };
+		}
+
+		const float newX = m_X / vecLength;
+		const float newY = m_Y / vecLength;
 
 		return { newX, newY };
 	}

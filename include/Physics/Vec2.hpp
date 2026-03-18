@@ -19,9 +19,16 @@ namespace PikumaLessons
 		friend auto operator<<(std::ostream& os, const Vec2& inVec) -> std::ostream&;
 		auto operator=(const Vec2& other) -> Vec2&;
 		auto operator=(Vec2&& other) noexcept -> Vec2&;
+
 		auto operator+(const Vec2& other) const -> Vec2;
 		auto operator-(const Vec2& other) const -> Vec2;
 		auto operator*(float scalar) const -> Vec2;
+		auto operator/(float scalar) const -> Vec2;
+
+		auto operator+=(const Vec2& other) -> Vec2&;
+		auto operator-=(const Vec2& other) -> Vec2&;
+		auto operator*=(float scalar) -> Vec2&;
+		auto operator/=(float scalar) -> Vec2&;
 
 		[[nodiscard]] auto Length() const -> float;
 		[[nodiscard]] auto LengthSquared() const -> float;

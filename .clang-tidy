@@ -39,3 +39,4 @@ CheckOptions:
   - { key: readability-identifier-naming.MemberPrefix, value: m_ }
   - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_ }
   - { key: readability-identifier-naming.ProtectedMemberPrefix, value: m_ }
+  - { key: readability-identifier-naming.GlobalConstantCase, value: UPPER_CASE }

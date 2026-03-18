@@ -1,13 +1,18 @@
 #include "Application.hpp"
 
 #include <SDL_events.h>
+#include <SDL_timer.h>
+#include <memory>
 
 #include "Graphics.hpp"
+#include "Physics/Constants.hpp"
+#include "Physics/Particle.hpp"
+#include "Physics/Vec2.hpp"
 
 namespace PikumaLessons
 {
 	Application::Application()
-		: m_IsRunning(false)
+		: m_IsRunning(false), m_TestParticle(nullptr), m_TimeSincePreviousFrame(0)
 	{
 	}
 
@@ -20,7 +25,7 @@ namespace PikumaLessons
 	{
 		m_IsRunning = Graphics::OpenWindow();
 
-		// TODO: setup objects in the scene
+		m_TestParticle = std::make_unique<Particle>(50.F, 50.F, 1.F);
 	}
 
 	void Application::Input()
@@ -47,20 +52,46 @@ namespace PikumaLessons
 
 	void Application::Update()
 	{
-		// TODO: update all objects in the scene
+		// Calculate the amount of time until the target frame time is reached (in milliseconds)
+		const int timeToWait = MILLISECONDS_PER_FRAME - static_cast<int>((SDL_GetTicks() - m_TimeSincePreviousFrame));
+		if(timeToWait > 0)
+		{
+			SDL_Delay(timeToWait);
+		}
+
+		// Calculate delta time in seconds
+		const float deltaTime = static_cast<float>((SDL_GetTicks() - m_TimeSincePreviousFrame)) / MILLISECONDS_PER_SECOND;
+
+		MoveTestParticle(deltaTime);
+
+		m_TimeSincePreviousFrame = SDL_GetTicks();
 	}
 
 	void Application::Render()
 	{
-		Graphics::ClearScreen(0xFF056263);
-		Graphics::DrawFillCircle({ 200, 200 }, 40, 0xFFFFFFFF);
+		Graphics::ClearScreen(TEAL);
+		if(m_TestParticle != nullptr)
+		{
+			Graphics::DrawFillCircle({ m_TestParticle->m_Position.m_X, m_TestParticle->m_Position.m_Y }, 4, WHITE);
+		}
 		Graphics::RenderFrame();
 	}
 
 	void Application::Destroy()
 	{
-		// TODO: destroy all objects in the scene
+		m_TestParticle.reset();
 
 		Graphics::CloseWindow();
+	}
+
+	void Application::MoveTestParticle(const float deltaTime)
+	{
+		if(m_TestParticle == nullptr)
+		{
+			return;
+		}
+
+		m_TestParticle->m_Velocity = Vec2(100.F, 30.F) * deltaTime;
+		m_TestParticle->m_Position += m_TestParticle->m_Velocity;
 	}
 }
