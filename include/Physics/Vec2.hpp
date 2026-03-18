@@ -30,6 +30,18 @@ namespace PikumaLessons
 		auto operator*=(float scalar) -> Vec2&;
 		auto operator/=(float scalar) -> Vec2&;
 
+		template<typename T>
+		[[nodiscard]] auto GetX() const -> T
+		{
+			return static_cast<T>(m_X);
+		}
+
+		template<typename T>
+		[[nodiscard]] auto GetY() const -> T
+		{
+			return static_cast<T>(m_Y);
+		}
+
 		[[nodiscard]] auto Length() const -> float;
 		[[nodiscard]] auto LengthSquared() const -> float;
 		[[nodiscard]] auto Normal() const -> Vec2;

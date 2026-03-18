@@ -1,5 +1,6 @@
 #include "Physics/Particle.hpp"
 
+#include <ostream>
 #include <iostream>
 
 namespace PikumaLessons
@@ -10,8 +11,44 @@ namespace PikumaLessons
 		std::cout << "Particle Constructor Called!" << '\n';
 	}
 
+	Particle::Particle(const Particle& other)
+		: m_Position(other.m_Position), m_Velocity(other.m_Velocity), m_Acceleration(other.m_Acceleration), m_Mass(other.m_Mass)
+	{
+		std::cout << "Particle Copy Constructor Called!" << '\n';
+	}
+
+	Particle::Particle(Particle&& other) noexcept
+	: m_Position(std::move(other.m_Position)), m_Velocity(std::move(other.m_Velocity)), m_Acceleration(std::move(other.m_Acceleration)), m_Mass(other.m_Mass)
+	{
+		std::cout << "Particle Move Constructor Called!" << '\n';
+	}
+
 	Particle::~Particle()
 	{
 		std::cout << "Particle Destructor Called!" << '\n';
+	}
+
+	auto operator<<(std::ostream& os, const Particle& inParticle) -> std::ostream&
+	{
+		os << inParticle.m_Position << " " << inParticle.m_Velocity << " " << inParticle.m_Acceleration << " " << inParticle.m_Mass;
+		return os;
+	}
+
+	auto Particle::operator=(const Particle& other) -> Particle&
+	{
+		m_Position = other.m_Position;
+		m_Velocity = other.m_Velocity;
+		m_Acceleration = other.m_Acceleration;
+		m_Mass = other.m_Mass;
+		return *this;
+	}
+
+	auto Particle::operator=(Particle&& other) noexcept -> Particle&
+	{
+		m_Position = std::move(other.m_Position);
+		m_Velocity  = std::move(other.m_Velocity);
+		m_Acceleration = std::move(other.m_Acceleration);
+		m_Mass = other.m_Mass;
+		return *this;
 	}
 }

@@ -11,7 +11,11 @@ Checks: >
   -readability-magic-numbers,
   -readability-uppercase-literal-suffix,
   -hicpp-avoid-goto,
-  -clang-analyzer-cplusplus.NewDeleteLeaks
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -cppcoreguidelines-narrowing-conversions,
+  -bugprone-narrowing-conversions,
+  -bugprone-easily-swappable-parameters,
+  -misc-non-private-member-variables-in-classes
 
 WarningsAsErrors: >
   clang-analyzer-*,

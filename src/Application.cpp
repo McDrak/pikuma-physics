@@ -25,7 +25,10 @@ namespace PikumaLessons
 	{
 		m_IsRunning = Graphics::OpenWindow();
 
-		m_TestParticle = std::make_unique<Particle>(50.F, 50.F, 1.F);
+		constexpr float xTestPosition = 50.F;
+		constexpr float yTestPosition = 50.F;
+		constexpr float testMass = 1.F;
+		m_TestParticle = std::make_unique<Particle>(xTestPosition, yTestPosition, testMass);
 	}
 
 	void Application::Input()
@@ -91,7 +94,9 @@ namespace PikumaLessons
 			return;
 		}
 
-		m_TestParticle->m_Velocity = Vec2(100.F, 30.F) * deltaTime;
+		constexpr float xTestVelocity = 100.F;
+		constexpr float yTestVelocity = 30.F;
+		m_TestParticle->m_Velocity = Vec2(xTestVelocity, yTestVelocity) * deltaTime;
 		m_TestParticle->m_Position += m_TestParticle->m_Velocity;
 	}
 }

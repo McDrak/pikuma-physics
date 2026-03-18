@@ -1,5 +1,8 @@
 #include "Graphics.hpp"
 
+#include "Physics/Constants.hpp"
+
+#include <SDL_stdinc.h>
 #include <iostream>
 
 #include "SDL2/SDL2_gfxPrimitives.h"
@@ -56,7 +59,7 @@ namespace PikumaLessons
 
 	void Graphics::ClearScreen(const Uint32 color)
 	{
-		SDL_SetRenderDrawColor(renderer, color >> 16, color >> 8, color, 255);
+		SDL_SetRenderDrawColor(renderer, color >> RED_BIT_MOVEMENT, color >> GREEN_BIT_MOVEMENT, color >> BLUE_BIT_MOVEMENT, COLOR_ALPHA);
 		SDL_RenderClear(renderer);
 	}
 
@@ -73,7 +76,7 @@ namespace PikumaLessons
 	void Graphics::DrawCircle(const Vec2& position, const int radius, const float angle, const Uint32 color)
 	{
 		circleColor(renderer, position.m_X, position.m_Y, radius, color);
-		lineColor(renderer, position.m_X, position.m_Y, position.m_X + cos(angle) * radius, position.m_Y + sin(angle) * radius, color);
+		lineColor(renderer, position.m_X, position.m_Y, position.m_X + (cos(angle) * radius), position.m_Y + (sin(angle) * radius), color);
 	}
 
 	void Graphics::DrawFillCircle(const Vec2& position, const int radius, const Uint32 color)
@@ -83,15 +86,15 @@ namespace PikumaLessons
 
 	void Graphics::DrawRect(const Vec2& position, const int width, const int height, const Uint32 color)
 	{
-		lineColor(renderer, position.m_X - width / 2.0, position.m_Y - height / 2.0, position.m_X + width / 2.0, position.m_Y - height / 2.0, color);
-		lineColor(renderer, position.m_X + width / 2.0, position.m_Y - height / 2.0, position.m_X + width / 2.0, position.m_Y + height / 2.0, color);
-		lineColor(renderer, position.m_X + width / 2.0, position.m_Y + height / 2.0, position.m_X - width / 2.0, position.m_Y + height / 2.0, color);
-		lineColor(renderer, position.m_X - width / 2.0, position.m_Y + height / 2.0, position.m_X - width / 2.0, position.m_Y - height / 2.0, color);
+		lineColor(renderer, position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), color);
 	}
 
 	void Graphics::DrawFillRect(const Vec2& position, const int width, const int height, const Uint32 color)
 	{
-		boxColor(renderer, position.m_X - width / 2.0, position.m_Y - height / 2.0, position.m_X + width / 2.0, position.m_Y + height / 2.0, color);
+		boxColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
 	}
 
 	void Graphics::DrawPolygon(const Vec2& position, const std::vector<Vec2>& vertices, const Uint32 color)
@@ -112,24 +115,29 @@ namespace PikumaLessons
 
 	void Graphics::DrawFillPolygon(const Vec2& position, const std::vector<Vec2>& vertices, const Uint32 color)
 	{
-		std::vector<short> vx;
-		std::vector<short> vy;
-		for (int i = 0; i < vertices.size(); i++)
+		std::vector<Sint16> xVertices(vertices.size());
+		std::vector<Sint16> yVertices(vertices.size());
+		for (const auto& vertex : vertices)
 		{
-			vx.push_back(static_cast<int>(vertices[i].m_X));
+			xVertices.push_back(vertex.GetX<Sint16>());
 		}
-		for (int i = 0; i < vertices.size(); i++)
+		for (const auto& vertex : vertices)
 		{
-			vy.push_back(static_cast<int>(vertices[i].m_Y));
+			yVertices.push_back(vertex.GetY<Sint16>());
 		}
-		filledPolygonColor(renderer, &vx[0], &vy[0], vertices.size(), color);
-		filledCircleColor(renderer, position.m_X, position.m_Y, 1, 0xFF000000);
+
+		const Sint16 xVertex = xVertices[0];
+		const Sint16 yVertex = yVertices[0];
+		filledPolygonColor(renderer, &xVertex, &yVertex, vertices.size(), color);
+		filledCircleColor(renderer, position.m_X, position.m_Y, 1, BLACK);
 	}
 
-	void Graphics::DrawTexture(const Vec2& position,  const int width, const int height, const float rotation, SDL_Texture* texture)
+	void Graphics::DrawTexture(const Vec2& position, const int width, const int height, const float rotation, SDL_Texture* texture)
 	{
-		SDL_Rect dstRect = {position.m_X - (width / 2), position.m_Y - (height / 2), width, height};
-		float rotationDeg = rotation * 57.2958;
+		const int xPosition = position.GetX<int>() - static_cast<int>(width / DRAW_WIDTH_RATIO);
+		const int yPosition = position.GetY<int>() - static_cast<int>(width / DRAW_HEIGHT_RATIO);
+		const float rotationDeg = rotation * RADIAN_CONVERSION_FACTOR;
+		const SDL_Rect dstRect = { xPosition, yPosition, width, height };
 		SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, rotationDeg, nullptr, SDL_FLIP_NONE);
 	}
 
