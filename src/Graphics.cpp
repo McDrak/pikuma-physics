@@ -137,7 +137,7 @@ namespace PikumaLessons
 		const int xPosition = position.GetX<int>() - static_cast<int>(width / DRAW_WIDTH_RATIO);
 		const int yPosition = position.GetY<int>() - static_cast<int>(width / DRAW_HEIGHT_RATIO);
 		const float rotationDeg = rotation * RADIAN_CONVERSION_FACTOR;
-		const SDL_Rect dstRect = { xPosition, yPosition, width, height };
+		const SDL_Rect dstRect = { .x = xPosition, .y = yPosition, .w = width, .h = height };
 		SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, rotationDeg, nullptr, SDL_FLIP_NONE);
 	}
 

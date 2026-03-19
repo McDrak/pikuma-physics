@@ -4,9 +4,12 @@
 
 namespace PikumaLessons
 {
-	constexpr int FPS = 60;
-	constexpr int MILLISECONDS_PER_FRAME = 1000 / FPS;
+	constexpr int FRAMES_PER_SECOND = 60;
+	constexpr int MILLISECONDS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
 	constexpr float MILLISECONDS_PER_SECOND = 1000.F;
+	constexpr float MAX_DELTA_TIME = 0.0333F;
+
+	constexpr int PIXELS_PER_METER = 50;
 	constexpr float RADIAN_CONVERSION_FACTOR = 57.2958F;
 	constexpr float DRAW_WIDTH_RATIO = 2.F;
 	constexpr float DRAW_HEIGHT_RATIO = 2.F;

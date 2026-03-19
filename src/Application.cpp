@@ -28,7 +28,12 @@ namespace PikumaLessons
 		constexpr float xTestPosition = 50.F;
 		constexpr float yTestPosition = 50.F;
 		constexpr float testMass = 1.F;
-		m_TestParticle = std::make_unique<Particle>(xTestPosition, yTestPosition, testMass);
+		constexpr int testRadius = 4;
+		m_TestParticle = std::make_unique<Particle>(xTestPosition, yTestPosition, testMass, testRadius);
+
+		constexpr float xTestAcceleration = 5.F * PIXELS_PER_METER;
+		constexpr float yTestAcceleration = 9.8F * PIXELS_PER_METER;
+		m_TestParticle->m_Acceleration = { xTestAcceleration, yTestAcceleration };
 	}
 
 	void Application::Input()
@@ -63,7 +68,10 @@ namespace PikumaLessons
 		}
 
 		// Calculate delta time in seconds
-		const float deltaTime = static_cast<float>((SDL_GetTicks() - m_TimeSincePreviousFrame)) / MILLISECONDS_PER_SECOND;
+		float deltaTime = static_cast<float>((SDL_GetTicks() - m_TimeSincePreviousFrame)) / MILLISECONDS_PER_SECOND;
+		// Non-deterministic delta time
+		// TODO: Check in the future to maybe have fixed and non-fixed delta times
+		deltaTime = std::min(deltaTime, MAX_DELTA_TIME);
 
 		MoveTestParticle(deltaTime);
 
@@ -75,13 +83,14 @@ namespace PikumaLessons
 		Graphics::ClearScreen(TEAL);
 		if(m_TestParticle != nullptr)
 		{
-			Graphics::DrawFillCircle({ m_TestParticle->m_Position.m_X, m_TestParticle->m_Position.m_Y }, 4, WHITE);
+			Graphics::DrawFillCircle(m_TestParticle->m_Position, m_TestParticle->m_Radius, WHITE);
 		}
 		Graphics::RenderFrame();
 	}
 
 	void Application::Destroy()
 	{
+		// For testing purposes, I'm clearing here the test particle here
 		m_TestParticle.reset();
 
 		Graphics::CloseWindow();
@@ -94,9 +103,31 @@ namespace PikumaLessons
 			return;
 		}
 
-		constexpr float xTestVelocity = 100.F;
-		constexpr float yTestVelocity = 30.F;
-		m_TestParticle->m_Velocity = Vec2(xTestVelocity, yTestVelocity) * deltaTime;
-		m_TestParticle->m_Position += m_TestParticle->m_Velocity;
+		// Integration of the acceleration and velocty to find the new position
+		m_TestParticle->m_Velocity += m_TestParticle->m_Acceleration * deltaTime;
+		m_TestParticle->m_Position += m_TestParticle->m_Velocity * deltaTime;
+
+		// Hardcoded boundary checks
+		if((m_TestParticle->m_Position.m_X - m_TestParticle->m_Radius) <= 0)
+		{
+			m_TestParticle->m_Position.m_X = m_TestParticle->m_Radius;
+			m_TestParticle->m_Velocity.m_X *= -1.F;
+		}
+		else if((m_TestParticle->m_Position.m_X + m_TestParticle->m_Radius) >= Graphics::windowWidth)
+		{
+			m_TestParticle->m_Position.m_X = Graphics::windowWidth - m_TestParticle->m_Radius;
+			m_TestParticle->m_Velocity.m_X *= -1.F;
+		}
+
+		if((m_TestParticle->m_Position.m_Y - m_TestParticle->m_Radius) <= 0)
+		{
+			m_TestParticle->m_Position.m_Y = m_TestParticle->m_Radius;
+			m_TestParticle->m_Velocity.m_Y *= -1.F;
+		}
+		else if((m_TestParticle->m_Position.m_Y + m_TestParticle->m_Radius) >= Graphics::windowHeight)
+		{
+			m_TestParticle->m_Position.m_Y = Graphics::windowHeight - m_TestParticle->m_Radius;
+			m_TestParticle->m_Velocity.m_Y *= -1.F;
+		}
 	}
 }

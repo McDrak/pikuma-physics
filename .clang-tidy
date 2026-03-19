@@ -15,7 +15,8 @@ Checks: >
   -cppcoreguidelines-narrowing-conversions,
   -bugprone-narrowing-conversions,
   -bugprone-easily-swappable-parameters,
-  -misc-non-private-member-variables-in-classes
+  -misc-non-private-member-variables-in-classes,
+  -readability-identifier-length
 
 WarningsAsErrors: >
   clang-analyzer-*,
