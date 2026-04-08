@@ -1,39 +1,49 @@
 #include "Application.hpp"
 
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <SDL_timer.h>
+#include <algorithm>
 #include <memory>
 
 #include "Graphics.hpp"
 #include "Physics/Constants.hpp"
 #include "Physics/Particle.hpp"
-#include "Physics/Vec2.hpp"
 
 namespace PikumaLessons
 {
-	Application::Application()
-		: m_IsRunning(false), m_TestParticle(nullptr), m_TimeSincePreviousFrame(0)
+	Application::Application(const int testParticlesAmount)
+		: m_IsRunning(false), m_ParticlesAmount(testParticlesAmount), m_TimeSincePreviousFrame(0)
 	{
+		m_Particles.reserve(m_ParticlesAmount);
 	}
 
-	auto Application::IsRunning() const -> bool
+	void Application::Run()
 	{
-		return m_IsRunning;
+		Setup();
+
+		while (IsRunning())
+		{
+			Input();
+			Update();
+			Render();
+		}
+
+		Destroy();
 	}
 
 	void Application::Setup()
 	{
 		m_IsRunning = Graphics::OpenWindow();
 
-		constexpr float xTestPosition = 50.F;
-		constexpr float yTestPosition = 50.F;
-		constexpr float testMass = 1.F;
-		constexpr int testRadius = 4;
-		m_TestParticle = std::make_unique<Particle>(xTestPosition, yTestPosition, testMass, testRadius);
-
-		constexpr float xTestAcceleration = 5.F * PIXELS_PER_METER;
-		constexpr float yTestAcceleration = 9.8F * PIXELS_PER_METER;
-		m_TestParticle->m_Acceleration = { xTestAcceleration, yTestAcceleration };
+		for(int currentParticleIndex = 0; currentParticleIndex < m_ParticlesAmount; currentParticleIndex++)
+		{
+			const float xTestPosition = 50.F + (20.F * currentParticleIndex);
+			const float yTestPosition = 50.F;
+			const float testMass = 1.F + (1.F * currentParticleIndex);
+			const int testRadius = 4 + (1 * currentParticleIndex);
+			m_Particles.push_back(std::make_unique<Particle>(xTestPosition, yTestPosition, testMass, testRadius));
+		}
 	}
 
 	void Application::Input()
@@ -47,11 +57,50 @@ namespace PikumaLessons
 					m_IsRunning = false;
 					break;
 				case SDL_KEYDOWN:
+				{
+					constexpr float keyboardForce = 50.F * PIXELS_PER_METER;
 					if (event.key.keysym.sym == SDLK_ESCAPE)
 					{
 						m_IsRunning = false;
 					}
+					else if(event.key.keysym.sym == SDLK_UP)
+					{
+						m_KeyboardPushForce.m_Y = -keyboardForce;
+					}
+					else if(event.key.keysym.sym == SDLK_DOWN)
+					{
+						m_KeyboardPushForce.m_Y = keyboardForce;
+					}
+					else if(event.key.keysym.sym == SDLK_LEFT)
+					{
+						m_KeyboardPushForce.m_X = -keyboardForce;
+					}
+					else if(event.key.keysym.sym == SDLK_RIGHT)
+					{
+						m_KeyboardPushForce.m_X = keyboardForce;
+					}
 					break;
+				}
+				case SDL_KEYUP:
+				{
+					if(event.key.keysym.sym == SDLK_UP)
+					{
+						m_KeyboardPushForce.m_Y = 0.F;
+					}
+					if(event.key.keysym.sym == SDLK_DOWN)
+					{
+						m_KeyboardPushForce.m_Y = 0.F;
+					}
+					if(event.key.keysym.sym == SDLK_LEFT)
+					{
+						m_KeyboardPushForce.m_X = 0.F;
+					}
+					if(event.key.keysym.sym == SDLK_RIGHT)
+					{
+						m_KeyboardPushForce.m_X = 0.F;
+					}
+					break;
+				}
 				default:
 					break;
 			}
@@ -73,7 +122,10 @@ namespace PikumaLessons
 		// TODO: Check in the future to maybe have fixed and non-fixed delta times
 		deltaTime = std::min(deltaTime, MAX_DELTA_TIME);
 
-		MoveTestParticle(deltaTime);
+		for(auto& currentParticle : m_Particles)
+		{
+			MoveTestParticle(deltaTime, currentParticle);
+		}
 
 		m_TimeSincePreviousFrame = SDL_GetTicks();
 	}
@@ -81,53 +133,66 @@ namespace PikumaLessons
 	void Application::Render()
 	{
 		Graphics::ClearScreen(TEAL);
-		if(m_TestParticle != nullptr)
+
+		for(auto& currentParticle : m_Particles)
 		{
-			Graphics::DrawFillCircle(m_TestParticle->m_Position, m_TestParticle->m_Radius, WHITE);
+			if(currentParticle != nullptr)
+			{
+				Graphics::DrawFillCircle(currentParticle->m_Position, currentParticle->m_Radius, WHITE);
+			}
 		}
+
 		Graphics::RenderFrame();
 	}
 
 	void Application::Destroy()
 	{
 		// For testing purposes, I'm clearing here the test particle here
-		m_TestParticle.reset();
+		for(auto& currentParticle : m_Particles)
+		{
+			currentParticle.reset();
+		}
 
 		Graphics::CloseWindow();
 	}
 
-	void Application::MoveTestParticle(const float deltaTime)
+	void Application::MoveTestParticle(const float deltaTime, std::unique_ptr<Particle>& testParticle)
 	{
-		if(m_TestParticle == nullptr)
+		if(testParticle == nullptr)
 		{
 			return;
 		}
 
-		// Integration of the acceleration and velocty to find the new position
-		m_TestParticle->m_Velocity += m_TestParticle->m_Acceleration * deltaTime;
-		m_TestParticle->m_Position += m_TestParticle->m_Velocity * deltaTime;
+		// Weight = mass * gravity ONLY in the Y axis
+		constexpr float xWeightForce = 0.F * PIXELS_PER_METER;
+		const float yWeightForce = testParticle->m_Mass * 9.8F * PIXELS_PER_METER;
+		testParticle->AddForce({ xWeightForce, yWeightForce });
+
+		testParticle->AddForce(m_KeyboardPushForce);
+
+		testParticle->Integrate(deltaTime);
 
 		// Hardcoded boundary checks
-		if((m_TestParticle->m_Position.m_X - m_TestParticle->m_Radius) <= 0)
+		if((testParticle->m_Position.m_X - testParticle->m_Radius) <= 0)
 		{
-			m_TestParticle->m_Position.m_X = m_TestParticle->m_Radius;
-			m_TestParticle->m_Velocity.m_X *= -1.F;
+			testParticle->m_Position.m_X = testParticle->m_Radius;
+			testParticle->m_Velocity.m_X *= -1.F;
 		}
-		else if((m_TestParticle->m_Position.m_X + m_TestParticle->m_Radius) >= Graphics::windowWidth)
+		else if((testParticle->m_Position.m_X + testParticle->m_Radius) >= Graphics::windowWidth)
 		{
-			m_TestParticle->m_Position.m_X = Graphics::windowWidth - m_TestParticle->m_Radius;
-			m_TestParticle->m_Velocity.m_X *= -1.F;
+			testParticle->m_Position.m_X = Graphics::windowWidth - testParticle->m_Radius;
+			testParticle->m_Velocity.m_X *= -1.F;
 		}
 
-		if((m_TestParticle->m_Position.m_Y - m_TestParticle->m_Radius) <= 0)
+		if((testParticle->m_Position.m_Y - testParticle->m_Radius) <= 0)
 		{
-			m_TestParticle->m_Position.m_Y = m_TestParticle->m_Radius;
-			m_TestParticle->m_Velocity.m_Y *= -1.F;
+			testParticle->m_Position.m_Y = testParticle->m_Radius;
+			testParticle->m_Velocity.m_Y *= -1.F;
 		}
-		else if((m_TestParticle->m_Position.m_Y + m_TestParticle->m_Radius) >= Graphics::windowHeight)
+		else if((testParticle->m_Position.m_Y + testParticle->m_Radius) >= Graphics::windowHeight)
 		{
-			m_TestParticle->m_Position.m_Y = Graphics::windowHeight - m_TestParticle->m_Radius;
-			m_TestParticle->m_Velocity.m_Y *= -1.F;
+			testParticle->m_Position.m_Y = Graphics::windowHeight - testParticle->m_Radius;
+			testParticle->m_Velocity.m_Y *= -1.F;
 		}
 	}
 }

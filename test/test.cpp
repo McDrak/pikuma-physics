@@ -2,17 +2,9 @@
 
 int main()
 {
-	PikumaLessons::Application app;
-	app.Setup();
-
-	while (app.IsRunning())
-	{
-		app.Input();
-		app.Update();
-		app.Render();
-	}
-
-	app.Destroy();
+	constexpr int testParticlesAmount = 5;
+	PikumaLessons::Application app(testParticlesAmount);
+	app.Run();
 
 	return 0;
 }

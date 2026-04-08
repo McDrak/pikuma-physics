@@ -6,19 +6,17 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 namespace PikumaLessons
 {
 	class Application
 	{
 		uint8_t m_IsRunning : 1;
-		std::unique_ptr<Particle> m_TestParticle;
+		int m_ParticlesAmount;
+		std::vector<std::unique_ptr<Particle>> m_Particles;
 		Uint32 m_TimeSincePreviousFrame;
-
-	public:
-		Application();
-
-		[[nodiscard]] auto IsRunning() const -> bool;
+		Vec2 m_KeyboardPushForce;
 
 		void Setup();
 		void Input();
@@ -26,6 +24,13 @@ namespace PikumaLessons
 		void Render();
 		void Destroy();
 
-		void MoveTestParticle(float deltaTime);
+	public:
+		explicit Application(int testParticlesAmount);
+
+		[[nodiscard]] auto IsRunning() const -> bool { return m_IsRunning; }
+
+		void Run();
+
+		void MoveTestParticle(float deltaTime, std::unique_ptr<Particle>& testParticle);
 	};
 }
