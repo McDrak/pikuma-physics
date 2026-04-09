@@ -86,15 +86,15 @@ namespace PikumaLessons
 
 	void Graphics::DrawRect(const Vec2& position, const int width, const int height, const Uint32 color)
 	{
-		lineColor(renderer, position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
-		lineColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), color);
-		lineColor(renderer, position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
-		lineColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X + (width / HALF_WIDTH_RATIO), position.m_Y - (height / HALF_HEIGHT_RATIO), position.m_X + (width / HALF_WIDTH_RATIO), position.m_Y + (height / HALF_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X - (width / HALF_WIDTH_RATIO), position.m_Y - (height / HALF_HEIGHT_RATIO), position.m_X + (width / HALF_WIDTH_RATIO), position.m_Y - (height / HALF_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X + (width / HALF_WIDTH_RATIO), position.m_Y + (height / HALF_HEIGHT_RATIO), position.m_X - (width / HALF_WIDTH_RATIO), position.m_Y + (height / HALF_HEIGHT_RATIO), color);
+		lineColor(renderer, position.m_X - (width / HALF_WIDTH_RATIO), position.m_Y + (height / HALF_HEIGHT_RATIO), position.m_X - (width / HALF_WIDTH_RATIO), position.m_Y - (height / HALF_HEIGHT_RATIO), color);
 	}
 
 	void Graphics::DrawFillRect(const Vec2& position, const int width, const int height, const Uint32 color)
 	{
-		boxColor(renderer, position.m_X - (width / DRAW_WIDTH_RATIO), position.m_Y - (height / DRAW_HEIGHT_RATIO), position.m_X + (width / DRAW_WIDTH_RATIO), position.m_Y + (height / DRAW_HEIGHT_RATIO), color);
+		boxColor(renderer, position.m_X - (width / HALF_WIDTH_RATIO), position.m_Y - (height / HALF_HEIGHT_RATIO), position.m_X + (width / HALF_WIDTH_RATIO), position.m_Y + (height / HALF_HEIGHT_RATIO), color);
 	}
 
 	void Graphics::DrawPolygon(const Vec2& position, const std::vector<Vec2>& vertices, const Uint32 color)
@@ -134,8 +134,8 @@ namespace PikumaLessons
 
 	void Graphics::DrawTexture(const Vec2& position, const int width, const int height, const float rotation, SDL_Texture* texture)
 	{
-		const int xPosition = position.GetX<int>() - static_cast<int>(width / DRAW_WIDTH_RATIO);
-		const int yPosition = position.GetY<int>() - static_cast<int>(width / DRAW_HEIGHT_RATIO);
+		const int xPosition = position.GetX<int>() - static_cast<int>(width / HALF_WIDTH_RATIO);
+		const int yPosition = position.GetY<int>() - static_cast<int>(width / HALF_HEIGHT_RATIO);
 		const float rotationDeg = rotation * RADIAN_CONVERSION_FACTOR;
 		const SDL_Rect dstRect = { .x = xPosition, .y = yPosition, .w = width, .h = height };
 		SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, rotationDeg, nullptr, SDL_FLIP_NONE);

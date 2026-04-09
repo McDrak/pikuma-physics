@@ -8,12 +8,13 @@
 
 #include "Graphics.hpp"
 #include "Physics/Constants.hpp"
+#include "Physics/Force.hpp"
 #include "Physics/Particle.hpp"
 
 namespace PikumaLessons
 {
 	Application::Application(const int testParticlesAmount)
-		: m_IsRunning(false), m_ParticlesAmount(testParticlesAmount), m_TimeSincePreviousFrame(0)
+		: m_IsRunning(false), m_TimeSincePreviousFrame(0), m_LiquidRectangle({}), m_ParticlesAmount(testParticlesAmount)
 	{
 		m_Particles.reserve(m_ParticlesAmount);
 	}
@@ -35,6 +36,11 @@ namespace PikumaLessons
 	void Application::Setup()
 	{
 		m_IsRunning = Graphics::OpenWindow();
+
+		m_LiquidRectangle.x = 0;
+		m_LiquidRectangle.y = Graphics::Height() / HALF_HEIGHT_RATIO;
+		m_LiquidRectangle.w = Graphics::Width();
+		m_LiquidRectangle.h = Graphics::Height() / HALF_HEIGHT_RATIO;
 
 		for(int currentParticleIndex = 0; currentParticleIndex < m_ParticlesAmount; currentParticleIndex++)
 		{
@@ -83,19 +89,11 @@ namespace PikumaLessons
 				}
 				case SDL_KEYUP:
 				{
-					if(event.key.keysym.sym == SDLK_UP)
+					if(event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_DOWN)
 					{
 						m_KeyboardPushForce.m_Y = 0.F;
 					}
-					if(event.key.keysym.sym == SDLK_DOWN)
-					{
-						m_KeyboardPushForce.m_Y = 0.F;
-					}
-					if(event.key.keysym.sym == SDLK_LEFT)
-					{
-						m_KeyboardPushForce.m_X = 0.F;
-					}
-					if(event.key.keysym.sym == SDLK_RIGHT)
+					if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)
 					{
 						m_KeyboardPushForce.m_X = 0.F;
 					}
@@ -134,6 +132,11 @@ namespace PikumaLessons
 	{
 		Graphics::ClearScreen(TEAL);
 
+		const int xLiquidPosition = m_LiquidRectangle.x + (m_LiquidRectangle.w / HALF_WIDTH_RATIO);
+		const int yLiquidPosition = m_LiquidRectangle.y + (m_LiquidRectangle.h / HALF_HEIGHT_RATIO);
+		const Vec2 liquidPosition(xLiquidPosition, yLiquidPosition);
+		Graphics::DrawFillRect(liquidPosition, m_LiquidRectangle.w, m_LiquidRectangle.y, WATER);
+
 		for(auto& currentParticle : m_Particles)
 		{
 			if(currentParticle != nullptr)
@@ -168,8 +171,16 @@ namespace PikumaLessons
 		const float yWeightForce = testParticle->m_Mass * 9.8F * PIXELS_PER_METER;
 		testParticle->AddForce({ xWeightForce, yWeightForce });
 
+		// Test keyboard force
 		testParticle->AddForce(m_KeyboardPushForce);
 
+		if(testParticle->m_Position.m_Y >= m_LiquidRectangle.y)
+		{
+			const Vec2 dragForce = Force::GetDragForce(*testParticle, 0.01F);
+			testParticle->AddForce(dragForce);
+		}
+
+		// Particle integration
 		testParticle->Integrate(deltaTime);
 
 		// Hardcoded boundary checks
