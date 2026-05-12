@@ -2,8 +2,7 @@
 
 int main()
 {
-	constexpr int testParticlesAmount = 5;
-	PikumaLessons::Application app(testParticlesAmount);
+	PikumaLessons::Application app;
 	app.Run();
 
 	return 0;

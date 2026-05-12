@@ -8,11 +8,13 @@ namespace PikumaLessons
 	constexpr int MILLISECONDS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
 	constexpr float MILLISECONDS_PER_SECOND = 1000.F;
 	constexpr float MAX_DELTA_TIME = 0.0333F;
+	constexpr int MAX_AMOUNT_PARTICLES = 100;
 
 	constexpr int PIXELS_PER_METER = 50;
 	constexpr float RADIAN_CONVERSION_FACTOR = 57.2958F;
 	constexpr float HALF_WIDTH_RATIO = 2.F;
 	constexpr float HALF_HEIGHT_RATIO = 2.F;
+	constexpr float DRAG_FORCE = 0.03F;
 
 	constexpr Uint32 BLACK = 0xFF000000;
 	constexpr Uint32 WHITE = 0xFFFFFFFF;

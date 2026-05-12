@@ -18,7 +18,7 @@ namespace PikumaLessons
 		SDL_Rect m_LiquidRectangle;
 
 		// Test particles
-		int m_ParticlesAmount;
+		int m_CurrentParticlesAmount;
 		std::vector<std::unique_ptr<Particle>> m_Particles;
 
 		// Test keyboard force
@@ -31,7 +31,7 @@ namespace PikumaLessons
 		void Destroy();
 
 	public:
-		explicit Application(int testParticlesAmount);
+		explicit Application();
 
 		[[nodiscard]] auto IsRunning() const -> bool { return m_IsRunning; }
 

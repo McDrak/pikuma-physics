@@ -2,6 +2,7 @@
 
 #include <SDL_events.h>
 #include <SDL_keycode.h>
+#include <SDL_mouse.h>
 #include <SDL_timer.h>
 #include <algorithm>
 #include <memory>
@@ -13,10 +14,10 @@
 
 namespace PikumaLessons
 {
-	Application::Application(const int testParticlesAmount)
-		: m_IsRunning(false), m_TimeSincePreviousFrame(0), m_LiquidRectangle({}), m_ParticlesAmount(testParticlesAmount)
+	Application::Application()
+		: m_IsRunning(false), m_TimeSincePreviousFrame(0), m_LiquidRectangle({}), m_CurrentParticlesAmount(0)
 	{
-		m_Particles.reserve(m_ParticlesAmount);
+		m_Particles.reserve(MAX_AMOUNT_PARTICLES);
 	}
 
 	void Application::Run()
@@ -41,15 +42,6 @@ namespace PikumaLessons
 		m_LiquidRectangle.y = Graphics::Height() / HALF_HEIGHT_RATIO;
 		m_LiquidRectangle.w = Graphics::Width();
 		m_LiquidRectangle.h = Graphics::Height() / HALF_HEIGHT_RATIO;
-
-		for(int currentParticleIndex = 0; currentParticleIndex < m_ParticlesAmount; currentParticleIndex++)
-		{
-			const float xTestPosition = 50.F + (20.F * currentParticleIndex);
-			const float yTestPosition = 50.F;
-			const float testMass = 1.F + (1.F * currentParticleIndex);
-			const int testRadius = 4 + (1 * currentParticleIndex);
-			m_Particles.push_back(std::make_unique<Particle>(xTestPosition, yTestPosition, testMass, testRadius));
-		}
 	}
 
 	void Application::Input()
@@ -96,6 +88,19 @@ namespace PikumaLessons
 					if(event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT)
 					{
 						m_KeyboardPushForce.m_X = 0.F;
+					}
+					break;
+				}
+				case SDL_MOUSEBUTTONDOWN:
+				{
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						const float xTestPosition = event.motion.x;
+						const float yTestPosition = event.motion.y;
+						const float testMass = 1.F;
+						const int testRadius = 4;
+						m_Particles.push_back(std::make_unique<Particle>(xTestPosition, yTestPosition, testMass, testRadius));
+						m_CurrentParticlesAmount++;
 					}
 					break;
 				}
@@ -176,7 +181,7 @@ namespace PikumaLessons
 
 		if(testParticle->m_Position.m_Y >= m_LiquidRectangle.y)
 		{
-			const Vec2 dragForce = Force::GetDragForce(*testParticle, 0.01F);
+			const Vec2 dragForce = Force::GetDragForce(*testParticle, DRAG_FORCE);
 			testParticle->AddForce(dragForce);
 		}
 

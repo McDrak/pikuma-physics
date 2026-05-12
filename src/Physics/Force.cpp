@@ -14,4 +14,10 @@ namespace PikumaLessons
 
 		return dragDirection * dragMagnitude;
 	}
+
+	auto Force::GetFrictionForce(const Particle& particle, float k) -> Vec2
+	{
+		const Vec2 frictionDirection = particle.m_Velocity.UnitVector() * -1.F;
+		return frictionDirection * k;
+	}
 }
